@@ -1,7 +1,9 @@
 // const node = global.config;
 
+// const local = require('../local/local.js');
+
 const send = (context, message, remote, callback) => {
-  console.log(`SENDING MESSAGE to nodes in: ${context.gid}`);
+//   console.log(`SENDING MESSAGE to nodes in: ${context.gid}`);
 
   const local = global.distribution.local;
   //   console.log(global.distribution);

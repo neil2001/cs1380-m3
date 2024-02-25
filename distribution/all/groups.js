@@ -1,11 +1,13 @@
-const comm = require("./comm");
-const routes = require("./routes");
-const status = require("./status");
-const gossip = require("./gossip");
+const commTemplate = require("./comm");
+// const routes = require("./routes");
+// const status = require("./status");
+// const gossip = require("./gossip");
 
-global.distribution["groups"] = new Set();
+// global.distribution["groups"] = new Set();
 
 const groupObj = {};
+
+var comm = null;
 
 const get = (groupName, callback) => {
   const getObjs = {};
@@ -14,24 +16,30 @@ const get = (groupName, callback) => {
 };
 
 const put = (groupName, nodes, callback) => {
-  // call the local.groups.put calls
-  // console.log(global.distribution.local.groups);
-  global.distribution.local.groups.put(groupName, nodes, (e, v) => {});
-  // console.log(global.distribution.local.groups);
 
-  global.distribution[groupName] = {};
+  const message = [groupName, nodes];
+  const remote = {service: 'groups', method: 'put'};
+  comm.send(message, remote, callback);
 
-  // comm, groups, routes, status, gossip
-  global.distribution[groupName].comm = comm({ gid: groupName });
-  global.distribution[groupName].groups = groups({ gid: groupName });
-  // global.distribution[groupName].groups
+  // // call the local.groups.put calls
+  // // console.log(global.distribution.local.groups);
+  // global.distribution.local.groups.put(groupName, nodes, (e, v) => {});
+  // // console.log(global.distribution.local.groups);
 
-  callback({}, {});
+  // global.distribution[groupName] = {};
+
+  // // comm, groups, routes, status, gossip
+  // global.distribution[groupName].comm = comm({ gid: groupName });
+  // global.distribution[groupName].groups = groups({ gid: groupName });
+  // // global.distribution[groupName].groups
+
+  // callback({}, {});
 };
 
 const groups = (options) => {
   const context = {};
   context.gid = options.gid || "all";
+  comm = commTemplate(context.gid);
 
   // global.distribution[groupId] = {};
   // global.distribution.groups.add(groupId);

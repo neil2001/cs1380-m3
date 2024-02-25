@@ -37,28 +37,28 @@ status.stop = () => {
   // global.server.close();
 };
 
-status.stop = (callback) => {
-  console.log("STOPPING");
-  try {
+// status.stop = (callback) => {
+//   console.log("STOPPING");
+//   try {
 
-    server.close();
+//     server.close();
 
-    console.log(global.distribution);
-    global.distribution.server.close(() => {
-      console.log("Server closed. No longer accepting connections.");
+//     console.log(global.distribution);
+//     global.distribution.server.close(() => {
+//       console.log("Server closed. No longer accepting connections.");
 
-      setTimeout(() => {
-        console.log("Exiting process.");
-        process.exit(0);
-      }, 1000);
-    });
-  } catch (error) {
-    callback(error, null);
-    return;
-  }
+//       setTimeout(() => {
+//         console.log("Exiting process.");
+//         process.exit(0);
+//       }, 1000);
+//     });
+//   } catch (error) {
+//     callback(error, null);
+//     return;
+//   }
 
-  callback(null, null);
-};
+//   callback(null, null);
+// };
 
 status.spawn = (configuration, callback) => {
   try {
@@ -73,6 +73,7 @@ status.spawn = (configuration, callback) => {
       const g = (s, cb) => {
         onStartRPC(s, (err1, result1) => {
           if (err1) {
+            console.log(err1);
             cb(err1);
           } else {
             // console.log(result1);
@@ -81,6 +82,7 @@ status.spawn = (configuration, callback) => {
                 cb(err2);
               } else {
                 // console.log(result2);
+                console.log(err2);
                 cb(null, result2);
               }
             });

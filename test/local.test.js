@@ -218,6 +218,7 @@ test('(2 pts) local.groups.put/get(browncs)', (done) => {
   distribution.local.groups.put('browncs', g, (e, v) => {
     distribution.local.groups.get('browncs', (e, v) => {
       expect(e).toBeFalsy();
+      console.log(v);
       expect(v).toBe(g);
       done();
     });
