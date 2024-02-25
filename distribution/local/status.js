@@ -1,5 +1,7 @@
 const id = require("../util/id");
 const { fork } = require("child_process");
+const path = require("path");
+
 const serialization = require("../util/serialization");
 const wire = require("../util/wire.js");
 
@@ -27,9 +29,22 @@ status.get = function (configuration, callback) {
   }
 };
 
+status.stop = () => {
+  console.log("STOPPING");
+  if (global.server) {
+    server.close();
+  }
+  // global.server.close();
+};
+
 status.stop = (callback) => {
+  console.log("STOPPING");
   try {
-    global.server.close(() => {
+
+    server.close();
+
+    console.log(global.distribution);
+    global.distribution.server.close(() => {
       console.log("Server closed. No longer accepting connections.");
 
       setTimeout(() => {
@@ -47,11 +62,12 @@ status.stop = (callback) => {
 
 status.spawn = (configuration, callback) => {
   try {
-    const callBackRPC = wire.createRPC(wire.toAsync(callback));
+    const callBackRPC = wire.createRPC(callback);
 
     if (!("onStart" in configuration)) {
       configuration.onStart = callBackRPC;
     } else {
+      console.log("FUCKED RPC SHIT");
       const onStartRPC = wire.createRPC(wire.toAsync(configuration.onStart));
 
       const g = (s, cb) => {
@@ -75,10 +91,17 @@ status.spawn = (configuration, callback) => {
       configuration.onStart = g;
     }
 
-    const file = path.join(__dirname, "..", "distribution,js");
+    // console.log(__dirname);
+
+    const file = path.join(__dirname, "../../", "distribution.js");
     const args = ["--config", serialization.serialize(configuration)];
+    // console.log(args);
 
     const childProcess = fork(file, args);
+
+    // childProcess.on("close", () => {
+    //   callBackRPC();
+    // });
     childProcess.on("error", (err) => {
       callback(err, null);
     });

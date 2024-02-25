@@ -45,7 +45,7 @@ const send = (context, message, remote, callback) => {
   for (const [nodeId, node] of Object.entries(
     local.groups.nodeGroups[context.gid]
   )) {
-    //   console.log(`sending to ${nodeId} in ${groupName}`);
+      console.log(`sending message to ${nodeId}`);
 
     const newRemote = {
       node: node,
