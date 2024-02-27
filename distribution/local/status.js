@@ -29,11 +29,27 @@ status.get = function (configuration, callback) {
   }
 };
 
-status.stop = () => {
-  console.log("STOPPING");
-  if (global.server) {
-    server.close();
-  }
+status.stop = (callback) => {
+  // console.log("STOPPING SERVER");
+
+  // if (global.server === null || global.server === undefined) {
+  //   callback(null, null);
+  //   return;
+  // }
+
+  setTimeout(() => {
+    global.server.close();
+    process.exit(0);
+  }, 1000);
+
+  // global.server.close(() => {
+  //   setTimeout(() => {
+  //     console.log("shutting down server");
+  //     process.exit(0);
+  //   });
+  // }, 1);
+
+  callback(null, null);
   // global.server.close();
 };
 
@@ -61,58 +77,72 @@ status.stop = () => {
 // };
 
 status.spawn = (configuration, callback) => {
-  try {
-    const callBackRPC = wire.createRPC(callback);
+  const callbackRPC = wire.createRPC(callback);
+  const newConfig = { ...configuration, onStart: callbackRPC };
 
-    if (!("onStart" in configuration)) {
-      configuration.onStart = callBackRPC;
-    } else {
-      console.log("FUCKED RPC SHIT");
-      const onStartRPC = wire.createRPC(wire.toAsync(configuration.onStart));
+  const file = path.join(__dirname, "../../", "distribution.js");
+  const args = ["--config", serialization.serialize(newConfig)];
 
-      const g = (s, cb) => {
-        onStartRPC(s, (err1, result1) => {
-          if (err1) {
-            console.log(err1);
-            cb(err1);
-          } else {
-            // console.log(result1);
-            callBackRPC((err2, result2) => {
-              if (err2) {
-                cb(err2);
-              } else {
-                // console.log(result2);
-                console.log(err2);
-                cb(null, result2);
-              }
-            });
-          }
-        });
-      };
+  const childProcess = fork(file, args);
 
-      configuration.onStart = g;
-    }
-
-    // console.log(__dirname);
-
-    const file = path.join(__dirname, "../../", "distribution.js");
-    const args = ["--config", serialization.serialize(configuration)];
-    // console.log(args);
-
-    const childProcess = fork(file, args);
-
-    // childProcess.on("close", () => {
-    //   callBackRPC();
-    // });
-    childProcess.on("error", (err) => {
-      callback(err, null);
-    });
-  } catch (error) {
-    callback(error, null);
-    return;
-  }
-
-  callback(null, null);
+  childProcess.on("close", (err) => {
+    callback(err, null);
+  });
 };
+
+// status.spawn = (configuration, callback) => {
+//   try {
+//     const callBackRPC = wire.createRPC(callback);
+
+//     if (!("onStart" in configuration)) {
+//       configuration.onStart = callBackRPC;
+//     } else {
+//       console.log("FUCKED RPC SHIT");
+//       const onStartRPC = wire.createRPC(wire.toAsync(configuration.onStart));
+
+//       const g = (s, cb) => {
+//         onStartRPC(s, (err1, result1) => {
+//           if (err1) {
+//             console.log(err1);
+//             cb(err1);
+//           } else {
+//             // console.log(result1);
+//             callBackRPC((err2, result2) => {
+//               if (err2) {
+//                 cb(err2);
+//               } else {
+//                 // console.log(result2);
+//                 console.log(err2);
+//                 cb(null, result2);
+//               }
+//             });
+//           }
+//         });
+//       };
+
+//       configuration.onStart = g;
+//     }
+
+//     // console.log(__dirname);
+
+//     const file = path.join(__dirname, "../../", "distribution.js");
+//     const args = ["--config", serialization.serialize(configuration)];
+//     // console.log(args);
+
+//     const childProcess = fork(file, args);
+
+//     // childProcess.on("close", () => {
+//     //   callBackRPC();
+//     // });
+//     childProcess.on("close", (err) => {
+//       callback(err, null);
+//     });
+//   } catch (error) {
+//     callback(error, null);
+//     return;
+//   }
+
+//   callback(null, null);
+// };
 
 module.exports = status;

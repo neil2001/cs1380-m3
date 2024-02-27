@@ -1,12 +1,10 @@
 const id = require("../util/id");
 const config = require("./config.js");
 
-const distribution = require("../../distribution");
-const commTemplate = require("../all/comm.js");
-const gossipTemplate = require("../all/gossip.js");
+const commTemplate = require("../all/comm");
 const groupsTemplate = require("../all/groups.js");
-const routesTemplate = require("../all/routes.js");
-const statusTemplate = require("../all/status.js");
+const routesTemplate = require("../all/routes");
+const statusTemplate = require("../all/status");
 
 const groups = {};
 
@@ -20,16 +18,8 @@ groups.nodeGroups = {
   },
 };
 
-distribution.all = {
-  [sid]: config,
-};
-
 groups.get = (group, callback) => {
-  // console.log(group);
-  // console.log(groups.nodeGroups);
-
   if (group in groups.nodeGroups) {
-    // console.log(groups.nodeGroups[group]);
     callback(null, groups.nodeGroups[group]);
   } else {
     callback(new Error(`group ${group} not found`));
@@ -37,28 +27,18 @@ groups.get = (group, callback) => {
 };
 
 groups.put = (groupName, nodes, callback) => {
-  // console.log(nodes);
-  // var newGroup = {};
-  // if (groupName in groups.nodeGroups) {
-  //   newGroup = groups.nodeGroups[groupName];
-  // }
-
-  // for (const nodeId in nodes) {
-  //   // console.log(nodeId);
-  //   newGroup[nodeId] = nodes[nodeId];
-  // }
-
-  // console.log(newGroup);
-
   groups.nodeGroups[groupName] = nodes;
 
-  distribution[groupName] = {
-    comm: commTemplate({ gid: groupName }),
-    groups: groupsTemplate({ gid: groupName }),
-    // status: statusTemplate({gid: groupName}),
+  const context = {
+    gid: groupName,
   };
 
-  console.log(groups.nodeGroups);
+  global.distribution[groupName] = {
+    comm: commTemplate(context),
+    groups: groupsTemplate(context),
+    status: statusTemplate(context),
+    routes: routesTemplate(context),
+  };
 
   callback(null, nodes);
 };
@@ -69,6 +49,8 @@ groups.add = (groupName, node, callback) => {
     callback(null, {});
     return;
   }
+
+  groups.nodeGroups.all[nodeSID] = node;
 
   groups.nodeGroups[groupName][nodeSID] = node;
   callback(null, node);
@@ -97,6 +79,8 @@ groups.del = (groupName, callback) => {
 
   const groupToDelete = groups.nodeGroups[groupName];
   delete groups.nodeGroups[groupName];
+
+  delete global.distribution[groupName];
 
   callback(null, groupToDelete);
 };
