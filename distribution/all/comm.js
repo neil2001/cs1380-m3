@@ -1,8 +1,4 @@
-// const node = global.config;
-
-// const local = require('../local/local.js');
-
-const send = (context, message, remote, callback) => {
+const send = (context, message, rem, callback) => {
   const local = global.distribution.local;
 
   local.groups.get(context.gid, (e, v) => {
@@ -11,9 +7,11 @@ const send = (context, message, remote, callback) => {
     const nodesToValues = {};
     const counter = { count: 0 };
 
+    const remote = { ...rem };
+
     for (const [sid, node] of Object.entries(allNodes)) {
-      local.comm.send(message, { node, ...remote }, (e2, v2) => {
-        // console.log(e2, v2);
+      remote.node = node;
+      local.comm.send(message, remote, (e2, v2) => {
         if (e2) {
           nodesToErrors[sid] = e2;
         } else {

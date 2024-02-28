@@ -33,49 +33,13 @@ status.get = function (configuration, callback) {
 };
 
 status.stop = (callback) => {
-  // console.log("STOPPING SERVER");
-
   global.server.close();
   setTimeout(() => {
     process.exit(0);
   }, 100);
 
   callback(null, global.nodeConfig);
-
-
-  // global.server.close(() => {
-  //   setTimeout(() => {
-  //     console.log("shutting down server");
-  //     process.exit(0);
-  //   });
-  // }, 1);
-
-  // callback(null, global.nodeConfig);
-  // global.server.close();
 };
-
-// status.stop = (callback) => {
-//   console.log("STOPPING");
-//   try {
-
-//     server.close();
-
-//     console.log(global.distribution);
-//     global.distribution.server.close(() => {
-//       console.log("Server closed. No longer accepting connections.");
-
-//       setTimeout(() => {
-//         console.log("Exiting process.");
-//         process.exit(0);
-//       }, 1000);
-//     });
-//   } catch (error) {
-//     callback(error, null);
-//     return;
-//   }
-
-//   callback(null, null);
-// };
 
 status.spawn = (configuration, callback) => {
   const callbackRPC = wire.createRPC(callback);
@@ -97,69 +61,6 @@ status.spawn = (configuration, callback) => {
   const args = ["--config", serialization.serialize(newConfig)];
 
   fork(file, args);
-
-  // child.stdout.on("data", (data) => {
-  //   console.log(`child stdout: ${data}`);
-  // });
-
-  // childProcess.on("close", (err) => {
-  //   callback(err, null);
-  // });
 };
-
-// status.spawn = (configuration, callback) => {
-//   try {
-//     const callBackRPC = wire.createRPC(callback);
-
-//     if (!("onStart" in configuration)) {
-//       configuration.onStart = callBackRPC;
-//     } else {
-//       console.log("FUCKED RPC SHIT");
-//       const onStartRPC = wire.createRPC(wire.toAsync(configuration.onStart));
-
-//       const g = (s, cb) => {
-//         onStartRPC(s, (err1, result1) => {
-//           if (err1) {
-//             console.log(err1);
-//             cb(err1);
-//           } else {
-//             // console.log(result1);
-//             callBackRPC((err2, result2) => {
-//               if (err2) {
-//                 cb(err2);
-//               } else {
-//                 // console.log(result2);
-//                 console.log(err2);
-//                 cb(null, result2);
-//               }
-//             });
-//           }
-//         });
-//       };
-
-//       configuration.onStart = g;
-//     }
-
-//     // console.log(__dirname);
-
-//     const file = path.join(__dirname, "../../", "distribution.js");
-//     const args = ["--config", serialization.serialize(configuration)];
-//     // console.log(args);
-
-//     const childProcess = fork(file, args);
-
-//     // childProcess.on("close", () => {
-//     //   callBackRPC();
-//     // });
-//     childProcess.on("close", (err) => {
-//       callback(err, null);
-//     });
-//   } catch (error) {
-//     callback(error, null);
-//     return;
-//   }
-
-//   callback(null, null);
-// };
 
 module.exports = status;

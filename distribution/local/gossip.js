@@ -1,7 +1,5 @@
 const gossip = {};
 
-gossip.recv = () => {
-    
-}
+gossip.recv = () => {};
 
 module.exports = gossip;

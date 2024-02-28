@@ -1,13 +1,6 @@
-const wire = require("../util/wire.js");
-
 const put = (context, service, serviceName, callback) => {
   global.distribution[context.gid][serviceName] = service;
   global.distribution.local[serviceName] = service;
-
-  //   global.distribution.local.routes.put(service, serviceName, (e, v) => {
-  //     console.log(e);
-  //     console.log(v);
-  //   });
 
   const message = [service, serviceName];
   const remote = { service: "routes", method: "put" };

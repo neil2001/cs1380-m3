@@ -15,25 +15,29 @@ const spawn = (context, nodeConfig, callback) => {
   global.distribution.local.status.spawn(nodeConfig, (e1, v1) => {
     console.log(e1);
     console.log(v1);
-    
-    global.distribution[context.gid].groups.add(context.gid, nodeConfig, (e2, v2) => {
-      if (Object.keys(e2).length === 0) {
-        callback(null, nodeConfig);
-      } else {
-        callback(
-          new Error(
-            `could not spawn node ${nodeConfig.ip}:${nodeConfig.port}`
-          )
-        );
+
+    global.distribution[context.gid].groups.add(
+      context.gid,
+      nodeConfig,
+      (e2, v2) => {
+        if (Object.keys(e2).length === 0) {
+          callback(null, nodeConfig);
+        } else {
+          callback(
+            new Error(
+              `could not spawn node ${nodeConfig.ip}:${nodeConfig.port}`
+            )
+          );
+        }
       }
-    });
+    );
   });
 };
 
 let status = (config) => {
   let context = {};
 
-  context.gid = config.gid || "all"; // contains a property named gid
+  context.gid = config.gid || "all";
 
   return {
     get: get.bind(null, context),
