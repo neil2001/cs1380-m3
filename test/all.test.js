@@ -24,7 +24,6 @@ beforeAll((done) => {
   let remote = { service: "status", method: "stop" };
   remote.node = n1;
   distribution.local.comm.send([], remote, (e, v) => {
-    console.log(e);
     remote.node = n2;
     distribution.local.comm.send([], remote, (e, v) => {
       remote.node = n3;
@@ -47,7 +46,6 @@ beforeAll((done) => {
             "mygroup",
             mygroupGroup,
             (e, v) => {
-              // console.log(distribution.mygroup);
               done();
             }
           );
@@ -237,13 +235,6 @@ test("(2 pts) all.routes.put(echo)", (done) => {
   };
 
   distribution.mygroup.routes.put(echoService, "echo", (e, v) => {
-    // console.log(e, v);
-    // console.log(distribution.local);
-    distribution.mygroup.routes.get("echo", (e, v) => {
-      // console.log(e);
-      // console.log(v);
-    });
-
     const n1 = { ip: "127.0.0.1", port: 8000 };
     const n2 = { ip: "127.0.0.1", port: 8001 };
     const n3 = { ip: "127.0.0.1", port: 8002 };
@@ -252,7 +243,6 @@ test("(2 pts) all.routes.put(echo)", (done) => {
     const r3 = { node: n3, service: "routes", method: "get" };
 
     distribution.local.comm.send(["echo"], r1, (e, v) => {
-      console.log(e);
       expect(e).toBeFalsy();
       expect(v.echo()).toBe("echo!");
       distribution.local.comm.send(["echo"], r2, (e, v) => {

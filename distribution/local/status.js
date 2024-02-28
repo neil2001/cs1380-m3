@@ -16,9 +16,6 @@ global.moreStatus = {
 status.get = function (configuration, callback) {
   callback = callback || function () {};
 
-  console.log(configuration);
-  console.log(global.moreStatus);
-
   if (configuration in global.nodeConfig) {
     callback(null, global.nodeConfig[configuration]);
   } else if (configuration in moreStatus) {

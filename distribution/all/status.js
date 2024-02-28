@@ -13,9 +13,6 @@ const stop = (context, callback) => {
 
 const spawn = (context, nodeConfig, callback) => {
   global.distribution.local.status.spawn(nodeConfig, (e1, v1) => {
-    console.log(e1);
-    console.log(v1);
-
     global.distribution[context.gid].groups.add(
       context.gid,
       nodeConfig,
