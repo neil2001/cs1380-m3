@@ -5,9 +5,9 @@ const send = (context, message, rem, callback) => {
     const allNodes = v;
     const nodesToErrors = {};
     const nodesToValues = {};
-    const counter = { count: 0 };
+    const counter = {count: 0};
 
-    const remote = { ...rem };
+    const remote = {...rem};
 
     for (const [sid, node] of Object.entries(allNodes)) {
       remote.node = node;
@@ -31,9 +31,9 @@ const send = (context, message, rem, callback) => {
 let comm = (config) => {
   let context = {};
 
-  context.gid = config.gid || "all";
+  context.gid = config.gid || 'all';
 
-  return { send: send.bind(null, context) };
+  return {send: send.bind(null, context)};
 };
 
 module.exports = comm;

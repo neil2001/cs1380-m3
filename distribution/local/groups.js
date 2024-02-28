@@ -1,11 +1,11 @@
-const id = require("../util/id");
-const config = require("./config.js");
+const id = require('../util/id');
+const config = require('./config.js');
 
-const commTemplate = require("../all/comm");
-const groupsTemplate = require("../all/groups");
-const routesTemplate = require("../all/routes");
-const statusTemplate = require("../all/status");
-const gossipTemplate = require("../all/gossip");
+const commTemplate = require('../all/comm');
+const groupsTemplate = require('../all/groups');
+const routesTemplate = require('../all/routes');
+const statusTemplate = require('../all/status');
+const gossipTemplate = require('../all/gossip');
 
 const groups = {};
 

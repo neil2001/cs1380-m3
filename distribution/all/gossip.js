@@ -19,14 +19,14 @@ const getRandomNodes = (group, n) => {
 const send = (context, message, rem, callback) => {
   const local = global.distribution.local;
 
-  const remote = { ...rem };
+  const remote = {...rem};
 
   local.groups.get(context.gid, (e, allNodes) => {
     const randomNodes = getRandomNodes(allNodes, context.subset);
 
     const nodesToErrors = {};
     const nodesToValues = {};
-    const counter = { count: 0 };
+    const counter = {count: 0};
 
     for (const [sid, node] of Object.entries(randomNodes)) {
       remote.node = node;
@@ -61,7 +61,7 @@ const del = (context, intervalId, callback) => {
 
 const gossip = (options) => {
   const context = {};
-  context.gid = options.gid || "all";
+  context.gid = options.gid || 'all';
   context.subset = options.subset || 3;
 
   return {
