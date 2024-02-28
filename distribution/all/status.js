@@ -13,13 +13,16 @@ const stop = (context, callback) => {
 
 const spawn = (context, nodeConfig, callback) => {
   global.distribution.local.status.spawn(nodeConfig, (e1, v1) => {
-    global.distribution[context.gid].groups.add("all", nodeConfig, (e2, v2) => {
+    console.log(e1);
+    console.log(v1);
+    
+    global.distribution[context.gid].groups.add(context.gid, nodeConfig, (e2, v2) => {
       if (Object.keys(e2).length === 0) {
         callback(null, nodeConfig);
       } else {
         callback(
           new Error(
-            `could not spawn node ${nodeToSpawn.ip}:${nodeToSpawn.port}`
+            `could not spawn node ${nodeConfig.ip}:${nodeConfig.port}`
           )
         );
       }

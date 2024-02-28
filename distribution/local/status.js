@@ -16,6 +16,9 @@ global.moreStatus = {
 status.get = function (configuration, callback) {
   callback = callback || function () {};
 
+  console.log(configuration);
+  console.log(global.moreStatus);
+
   if (configuration in global.nodeConfig) {
     callback(null, global.nodeConfig[configuration]);
   } else if (configuration in moreStatus) {
@@ -32,15 +35,13 @@ status.get = function (configuration, callback) {
 status.stop = (callback) => {
   // console.log("STOPPING SERVER");
 
-  // if (global.server === null || global.server === undefined) {
-  //   callback(null, null);
-  //   return;
-  // }
-
+  global.server.close();
   setTimeout(() => {
-    global.server.close();
     process.exit(0);
-  }, 1000);
+  }, 100);
+
+  callback(null, global.nodeConfig);
+
 
   // global.server.close(() => {
   //   setTimeout(() => {
@@ -49,7 +50,7 @@ status.stop = (callback) => {
   //   });
   // }, 1);
 
-  callback(null, null);
+  // callback(null, global.nodeConfig);
   // global.server.close();
 };
 
@@ -78,16 +79,32 @@ status.stop = (callback) => {
 
 status.spawn = (configuration, callback) => {
   const callbackRPC = wire.createRPC(callback);
-  const newConfig = { ...configuration, onStart: callbackRPC };
+
+  const newConfig = { ...configuration };
+  if (!("onStart" in configuration)) {
+    newConfig.onStart = callbackRPC;
+  } else {
+    let funcStr = `
+    let onStart = ${configuration.onStart.toString()};
+    let callbackRPC = ${callbackRPC.toString()};
+    onStart();
+    callbackRPC(null, global.nodeConfic, () => {});
+    `;
+    newConfig.onStart = new Function(funcStr);
+  }
 
   const file = path.join(__dirname, "../../", "distribution.js");
   const args = ["--config", serialization.serialize(newConfig)];
 
-  const childProcess = fork(file, args);
+  fork(file, args);
 
-  childProcess.on("close", (err) => {
-    callback(err, null);
-  });
+  // child.stdout.on("data", (data) => {
+  //   console.log(`child stdout: ${data}`);
+  // });
+
+  // childProcess.on("close", (err) => {
+  //   callback(err, null);
+  // });
 };
 
 // status.spawn = (configuration, callback) => {

@@ -2,9 +2,10 @@ const id = require("../util/id");
 const config = require("./config.js");
 
 const commTemplate = require("../all/comm");
-const groupsTemplate = require("../all/groups.js");
+const groupsTemplate = require("../all/groups");
 const routesTemplate = require("../all/routes");
 const statusTemplate = require("../all/status");
+const gossipTemplate = require("../all/gossip");
 
 const groups = {};
 
@@ -38,6 +39,7 @@ groups.put = (groupName, nodes, callback) => {
     groups: groupsTemplate(context),
     status: statusTemplate(context),
     routes: routesTemplate(context),
+    gossip: gossipTemplate(context),
   };
 
   callback(null, nodes);
